@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Productos</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<h1>Gestión de Productos</h1>
+
+<section>
+    <h2>Agregar Producto</h2>
+    <form id="addProductForm">
+        <input type="text" id="nombre" placeholder="Nombre" required>
+        <input type="text" id="descripcion" placeholder="Descripción" required>
+        <input type="number" id="precio" placeholder="Precio" required>
+        <input type="date" id="fechaCreacion" required>
+        <button type="submit">Agregar Producto</button>
+    </form>
+</section>
+
+<section>
+    <h2>Productos Registrados</h2>
+    <button onclick="getAllProducts()">Cargar Productos</button>
+
+    <!-- Tabla para mostrar productos -->
+    <table id="productTable">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Descripción</th>
+            <th>Precio</th>
+            <th>Fecha Creación</th>
+        </tr>
+        </thead>
+        <tbody>
+        <!-- Aquí se cargarán los productos dinámicamente -->
+        </tbody>
+    </table>
+</section>
+
+<section>
+    <h2>Buscar Producto por ID</h2>
+    <input type="number" id="buscarId" placeholder="ID del Producto">
+    <button onclick="getProductById()">Buscar</button>
+    <p id="productoEncontrado"></p>
+</section>
+
+<section>
+    <h2>Eliminar Producto</h2>
+    <input type="number" id="deleteId" placeholder="ID del Producto">
+    <button onclick="deleteProduct()">Eliminar</button>
+</section>
+
+<script src="app.js"></script>
+</body>
+</html>
