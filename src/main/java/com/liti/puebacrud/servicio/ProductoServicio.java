@@ -3,13 +3,14 @@ package com.liti.puebacrud.servicio;
 import com.liti.puebacrud.persistencia.entidad.ProductoEntidad;
 import com.liti.puebacrud.persistencia.repositorio.ProductoRepositorio;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-// Esta clase maneja la lógica de negocio relacionada con los productos.
 @Service
 public class ProductoServicio {
 
@@ -20,36 +21,45 @@ public class ProductoServicio {
         this.productoRepositorio = productoRepositorio;
     }
 
-    // Obtiene todos los productos de la base de datos de forma asíncrona.
+    // Obtener productos con paginación y filtro opcional por nombre
     @Async
-    public CompletableFuture<List<ProductoEntidad>> getAll() {
-        return CompletableFuture.completedFuture(this.productoRepositorio.findAll());
+    public CompletableFuture<List<ProductoEntidad>> getAll(String nombre, int page, int size) {
+        List<ProductoEntidad> productos;
+
+        if (nombre != null && !nombre.isEmpty()) {
+            productos = productoRepositorio.findByNombreContainingIgnoreCase(nombre);
+        } else {
+            productos = productoRepositorio.findAll();
+        }
+
+        // Paginación manual (porque ListCrudRepository no soporta `Pageable`)
+        int fromIndex = Math.min(page * size, productos.size());
+        int toIndex = Math.min(fromIndex + size, productos.size());
+
+        return CompletableFuture.supplyAsync(() -> productos.subList(fromIndex, toIndex));
     }
 
-    // Obtiene un producto por su ID de forma asíncrona.
+
     @Async
     public CompletableFuture<ProductoEntidad> get(int idProducto) {
         return CompletableFuture.completedFuture(
-                this.productoRepositorio.findById(idProducto).orElse(null)
+                productoRepositorio.findById(idProducto).orElse(null)
         );
     }
 
-    // Inserta un producto en la base de datos de forma asíncrona.
     @Async
     public CompletableFuture<ProductoEntidad> save(ProductoEntidad producto) {
-        return CompletableFuture.completedFuture(this.productoRepositorio.save(producto));
+        return CompletableFuture.completedFuture(productoRepositorio.save(producto));
     }
 
-    // Verifica si un producto existe en la base de datos de forma asíncrona.
     @Async
     public CompletableFuture<Boolean> exists(int idProducto) {
-        return CompletableFuture.completedFuture(this.productoRepositorio.existsById(idProducto));
+        return CompletableFuture.completedFuture(productoRepositorio.existsById(idProducto));
     }
 
-    // Elimina un producto en la base de datos de forma asíncrona.
     @Async
     public CompletableFuture<Void> delete(int idProducto) {
-        this.productoRepositorio.deleteById(idProducto);
+        productoRepositorio.deleteById(idProducto);
         return CompletableFuture.completedFuture(null);
     }
 }

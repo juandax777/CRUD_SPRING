@@ -23,10 +23,13 @@ public class ProductoControlador {
         this.productoServicio = productoServicio;
     }
 
-    // Obtiene todos los productos de forma asíncrona.
+    // Obtener productos con paginación y filtro opcional por nombre
     @GetMapping
-    public CompletableFuture<ResponseEntity<List<ProductoEntidad>>> getAll() {
-        return productoServicio.getAll().thenApply(ResponseEntity::ok);
+    public CompletableFuture<List<ProductoEntidad>> getAll(
+            @RequestParam(required = false) String nombre,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        return productoServicio.getAll(nombre, page, size);
     }
 
     // Obtiene un producto por su ID de forma asíncrona.
